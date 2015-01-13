@@ -20,4 +20,16 @@
         android:layout_weight="1"
         />
 
+    <TextView
+        android:id="@+id/textview_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="@dimen/listview_related_topic_padding"
+        android:gravity="top|center"
+        android:background="@color/listview_related_topic_background"
+        android:textColor="@color/listview_related_topic_text_color"
+        android:text="@string/no_results"
+        />
+
 </LinearLayout>

@@ -5,8 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+import com.swampmobile.avaimobileproblem.R;
 import com.swampmobile.avaimobileproblem.app.net.models.DuckDuckGoRelatedTopic;
 
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ public class RelatedTopicsAdapter extends BaseAdapter {
 
     // Optimizations
     private DuckDuckGoRelatedTopic mRelatedTopic;
+    private Holder mHolder;
 
     public RelatedTopicsAdapter(Context context) {
         mContext = context;
@@ -57,12 +61,29 @@ public class RelatedTopicsAdapter extends BaseAdapter {
         // overkill in this instance.
 
         if (null == convertView) {
-            convertView = mLayoutInflater.inflate(android.R.layout.simple_list_item_1, null);
+            convertView = mLayoutInflater.inflate(R.layout.listitem_related_topic, null);
+
+            mHolder = new Holder();
+            mHolder.mNumberTextView = (TextView) convertView.findViewById(R.id.textview_number);
+            mHolder.mContentTextView = (TextView) convertView.findViewById(R.id.textview_content);
+            convertView.setTag(mHolder);
         }
 
         mRelatedTopic = getItem(position);
-        ((TextView)convertView).setText(mRelatedTopic.getText());
+
+        mHolder = (Holder) convertView.getTag();
+        // Seems that icons are never returned when disambigous results are "on"
+//        if (mRelatedTopic.hasIcon()) {
+//            Picasso.with(mContext).load(mRelatedTopic.getIcon().getUrl()).into(mHolder.mNumberTextView);
+//        }
+        mHolder.mNumberTextView.setText((position + 1) + "");
+        mHolder.mContentTextView.setText(mRelatedTopic.getText());
 
         return convertView;
+    }
+
+    private static class Holder {
+        public TextView mNumberTextView;
+        public TextView mContentTextView;
     }
 }

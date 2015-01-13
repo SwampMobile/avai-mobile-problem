@@ -1,5 +1,6 @@
 package com.swampmobile.avaimobileproblem.activities;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,6 +22,7 @@ public abstract class BaseQueryActivity extends BaseActivity {
 
     private TextView mHeaderTextView;
     private ListView mListView;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,9 @@ public abstract class BaseQueryActivity extends BaseActivity {
 
         mHeaderTextView = (TextView) findViewById(R.id.textview_header);
         mListView = (ListView) findViewById(R.id.listview);
+        mListView.setEmptyView(findViewById(R.id.textview_empty_view));
+
+        createProgressDialog();
 
         String query = getIntent().getStringExtra(EXTRA_KEY_QUERY);
 
@@ -39,8 +44,16 @@ public abstract class BaseQueryActivity extends BaseActivity {
             finish();
         } else {
             // Query results don't change during this Activity, so we start query here
+            showProgressDialog();
             doQuery(query);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        dismissProgressDialog();
+
+        super.onDestroy();
     }
 
     @Override
@@ -56,6 +69,8 @@ public abstract class BaseQueryActivity extends BaseActivity {
     abstract protected void doQuery(String query);
 
     protected void displayResult(DuckDuckGoResponse response) {
+        dismissProgressDialog();
+
         // In case the Activity was torn down before this was invoked.
         if (null == mHeaderTextView || isFinishing()) {
             return;
@@ -70,6 +85,25 @@ public abstract class BaseQueryActivity extends BaseActivity {
     }
 
     protected void onError(RetrofitError error) {
-        mHeaderTextView.setText(error.getMessage());
+        dismissProgressDialog();
+        mHeaderTextView.setText(getString(R.string.search_error));
+    }
+
+    private void createProgressDialog() {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setTitle(getString(R.string.dialog_title_searching));
+    }
+
+    private void showProgressDialog() {
+        if (!mProgressDialog.isShowing()) {
+            mProgressDialog.show();
+        }
+    }
+
+    private void dismissProgressDialog() {
+        if (mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
     }
 }

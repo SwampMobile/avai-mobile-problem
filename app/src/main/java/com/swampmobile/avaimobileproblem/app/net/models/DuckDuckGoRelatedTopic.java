@@ -24,6 +24,10 @@ public class DuckDuckGoRelatedTopic {
         return result;
     }
 
+    public boolean hasIcon() {
+        return !TextUtils.isEmpty(icon.getUrl());
+    }
+
     public DuckDuckGoIcon getIcon() {
         return icon;
     }

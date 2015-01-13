@@ -13,5 +13,8 @@
     <string name="radiobutton_rxjava">Query Using RxJava</string>
     <string name="title_activity_query_robospice">Query With Robospice</string>
     <string name="title_activity_query_rxjava">Query With RxJava</string>
+    <string name="no_results">No Results Found</string>
+    <string name="dialog_title_searching">Searching...</string>
+    <string name="search_error">Search Error Occurred - Try Again.</string>
 
 </resources>
