@@ -1,85 +1,72 @@
 package com.swampmobile.avaimobileproblem.activities;
 
-import android.os.AsyncTask;
+import android.os.Bundle;
 
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.SpiceRequest;
+import com.octo.android.robospice.request.listener.RequestListener;
+import com.octo.android.robospice.request.retrofit.RetrofitSpiceRequest;
 import com.swampmobile.avaimobileproblem.app.net.apis.DuckDuckGoApi;
 import com.swampmobile.avaimobileproblem.app.net.models.DuckDuckGoResponse;
+import com.swampmobile.avaimobileproblem.services.DuckDuckGoRobospiceService;
 
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 
 public class QueryRobospiceActivity extends BaseQueryActivity {
 
-    public static final String EXTRA_KEY_QUERY = "query";
+    private SpiceManager mSpiceManager;
 
-    private DoQueryAsyncTask queryTask;
+    private RequestListener<DuckDuckGoResponse> mRequestListener = new RequestListener<DuckDuckGoResponse>() {
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            onError((RetrofitError) spiceException.getCause());
+        }
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_query_async_task);
-//    }
+        @Override
+        public void onRequestSuccess(DuckDuckGoResponse duckDuckGoResponse) {
+            displayResult(duckDuckGoResponse);
+        }
+    };
 
     @Override
-    protected void onDestroy() {
-        // Make sure to clean up the async task
-        if (queryTask.getStatus() != AsyncTask.Status.FINISHED) {
-            queryTask.cancel(true);
-        }
-        queryTask = null;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        // Forward super call
-        super.onDestroy();
+        // Our super class invokes doQuery() in its onCreate(), therefore the mSpiceManager is
+        // instantiated in our doQuery().  Normally, mSpiceManager would be instantiated here.
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mSpiceManager.start(this);
+    }
+
+    @Override
+    protected void onStop() {
+        mSpiceManager.shouldStop();
+        super.onStop();
     }
 
     @Override
     protected void doQuery(String query) {
-        queryTask = new DoQueryAsyncTask(query, this);
-        queryTask.execute();
+        mSpiceManager = new SpiceManager(DuckDuckGoRobospiceService.class);
+        mSpiceManager.execute(new DuckDuckGoSpiceRequest(query), mRequestListener);
     }
 
-    private static class DoQueryAsyncTask extends AsyncTask<Void, Void, DuckDuckGoResponse> {
+    private static class DuckDuckGoSpiceRequest extends RetrofitSpiceRequest<DuckDuckGoResponse, DuckDuckGoApi> {
 
         private String mQuery;
-        private QueryRobospiceActivity mActivity;
-        private RetrofitError mError;
 
-        public DoQueryAsyncTask(String query, QueryRobospiceActivity activity) {
+        public DuckDuckGoSpiceRequest(String query) {
+            super(DuckDuckGoResponse.class, DuckDuckGoApi.class);
             mQuery = query;
-            mActivity = activity;
         }
 
         @Override
-        protected DuckDuckGoResponse doInBackground(Void... params) {
-            RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint(DuckDuckGoApi.ENDPOINT)
-                    .setLogLevel(RestAdapter.LogLevel.FULL)
-                    .build();
-
-            DuckDuckGoApi api = restAdapter.create(DuckDuckGoApi.class);
-
-            try {
-                return api.getQuery(mQuery);
-            } catch (RetrofitError error) {
-                mError = error;
-                return null;
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mActivity = null;
-        }
-
-        @Override
-        protected void onPostExecute(DuckDuckGoResponse result) {
-            if (null != mActivity && !mActivity.isFinishing()) {
-                if (null != result) {
-                    mActivity.displayResult(result);
-                } else {
-                    mActivity.onError(mError);
-                }
-            }
+        public DuckDuckGoResponse loadDataFromNetwork() throws Exception {
+            return getService().getQuery(mQuery);
         }
     }
 }

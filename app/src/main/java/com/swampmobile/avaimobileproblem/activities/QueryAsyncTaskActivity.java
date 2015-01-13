@@ -70,7 +70,7 @@ public class QueryAsyncTaskActivity extends BaseQueryActivity {
 
         @Override
         protected void onPostExecute(DuckDuckGoResponse result) {
-            if (null != mActivity && !mActivity.isFinishing()) {
+            if (null != mActivity) {
                 if (null != result) {
                     mActivity.displayResult(result);
                 } else {

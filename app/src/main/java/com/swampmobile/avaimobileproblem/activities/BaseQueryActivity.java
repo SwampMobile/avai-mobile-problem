@@ -57,7 +57,7 @@ public abstract class BaseQueryActivity extends BaseActivity {
 
     protected void displayResult(DuckDuckGoResponse response) {
         // In case the Activity was torn down before this was invoked.
-        if (null == mHeaderTextView) {
+        if (null == mHeaderTextView || isFinishing()) {
             return;
         }
 

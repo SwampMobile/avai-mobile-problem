@@ -3,6 +3,7 @@
     package="com.swampmobile.avaimobileproblem" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -35,6 +36,9 @@
             android:label="@string/title_activity_query_rxjava"
             android:screenOrientation="portrait">
         </activity>
+        <service
+            android:name=".services.DuckDuckGoRobospiceService"
+            />
     </application>
 
 </manifest>
