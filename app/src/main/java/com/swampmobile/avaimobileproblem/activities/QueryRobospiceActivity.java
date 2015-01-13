@@ -1,13 +1,16 @@
 package com.swampmobile.avaimobileproblem.activities;
 
 import android.os.AsyncTask;
+
 import com.swampmobile.avaimobileproblem.app.net.apis.DuckDuckGoApi;
 import com.swampmobile.avaimobileproblem.app.net.models.DuckDuckGoResponse;
 
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 
-public class QueryAsyncTaskActivity extends BaseQueryActivity {
+public class QueryRobospiceActivity extends BaseQueryActivity {
+
+    public static final String EXTRA_KEY_QUERY = "query";
 
     private DoQueryAsyncTask queryTask;
 
@@ -38,10 +41,10 @@ public class QueryAsyncTaskActivity extends BaseQueryActivity {
     private static class DoQueryAsyncTask extends AsyncTask<Void, Void, DuckDuckGoResponse> {
 
         private String mQuery;
-        private QueryAsyncTaskActivity mActivity;
+        private QueryRobospiceActivity mActivity;
         private RetrofitError mError;
 
-        public DoQueryAsyncTask(String query, QueryAsyncTaskActivity activity) {
+        public DoQueryAsyncTask(String query, QueryRobospiceActivity activity) {
             mQuery = query;
             mActivity = activity;
         }

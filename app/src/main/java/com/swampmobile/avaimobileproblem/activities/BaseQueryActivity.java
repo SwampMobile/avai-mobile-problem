@@ -2,8 +2,8 @@ package com.swampmobile.avaimobileproblem.activities;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -15,7 +15,7 @@ import com.swampmobile.avaimobileproblem.app.net.models.DuckDuckGoResponse;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 
-public abstract class BaseQueryActivity extends ActionBarActivity {
+public abstract class BaseQueryActivity extends BaseActivity {
 
     public static final String EXTRA_KEY_QUERY = "query";
 
@@ -26,6 +26,8 @@ public abstract class BaseQueryActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_query_async_task);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         mHeaderTextView = (TextView) findViewById(R.id.textview_header);
         mListView = (ListView) findViewById(R.id.listview);
@@ -39,6 +41,16 @@ public abstract class BaseQueryActivity extends ActionBarActivity {
             // Query results don't change during this Activity, so we start query here
             doQuery(query);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     abstract protected void doQuery(String query);
